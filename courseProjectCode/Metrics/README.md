@@ -18,8 +18,10 @@ For code structure metrics, run the powershell file:
 .\courseProjectCode\Metrics\code-structure-metrics.ps1
 ```
 
-this outputs LoC metrics to 'production-java-cloc.csv' and 
-comment density to 'production-java-modules.csv'
+this outputs file metrics to `production-java-cloc.csv` and LoC metrics with comment density to 
+`production-java-modules.csv`
+
+(comment density = comments / (code + comments + blanks) × 100)
 
 For testability, first generate fresh test and coverage reports:
 
@@ -34,3 +36,5 @@ Then summarize the reports with the powershell file:
 ```
 
 The script does not run its own tests, it simply reads test reports.
+
+this outputs test metrics to `production-java-tests.csv`.

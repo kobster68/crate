@@ -6,6 +6,10 @@ $surefireReports = Get-ChildItem -Path $repoRoot -Recurse -File -Filter "TEST-*.
     Where-Object {
         $_.FullName -like "*\target\surefire-reports\TEST-*.xml"
     }
+	
+if (!$surefireReports) {
+    throw "No Surefire reports found. Run '.\mvnw.cmd test jacoco:report' from the repository root first."
+}
 
 $reports = foreach ($report in $surefireReports) {
     $relativePath = [System.IO.Path]::GetRelativePath(

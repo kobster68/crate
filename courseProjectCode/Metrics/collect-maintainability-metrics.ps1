@@ -2,6 +2,12 @@ $repoRoot = Join-Path $PSScriptRoot "../.." -Resolve
 
 $clocOutput = Join-Path $PSScriptRoot "production-java-cloc.csv"
 
+$clocInstalled = Get-Command "cloc" -ErrorAction SilentlyContinue
+
+if (!$clocInstalled) {
+	throw "cloc is required. Install it and ensure it is on PATH."
+}
+
 $productionJavaDirs = Get-ChildItem -Path $repoRoot -Recurse -Directory -Filter java |
     Where-Object {
         $_.FullName -like "*\src\main\java" -and

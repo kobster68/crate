@@ -1,25 +1,36 @@
 # Metrics Collection
 
-## Maintainability Metrics
+These scripts collect maintainability and testability metrics for the SWEN 777
+Software Quality Assurance analysis of CrateDB. Run the commands below from the
+repository root in PowerShell.
 
-### Scope
+## Prerequisites
 
-Maintainability metrics were collected over Java production source files located
-under Maven `src/main/java` directories.
-
-The `benchmarks` module, test sources, documentation, build output, and generated
-artifacts were excluded.
-
-### Tool
-
+- Windows PowerShell
 - cloc 2.10
-- Windows Powershell
-
-### Metrics
-
-- Lines of Code (LOC)
-- Comment lines
-- Comment density
-- LOC per file
+- Java 26.
 
 ### Collection Procedure
+
+For code structure metrics, run the powershell file:
+
+```powershell
+.\courseProjectCode\Metrics\code-structure-metrics.ps1
+```
+
+this outputs LoC metrics to 'production-java-cloc.csv' and 
+comment density to 'production-java-modules.csv'
+
+For testability, first generate fresh test and coverage reports:
+
+```powershell
+.\mvnw.cmd clean test jacoco:report
+```
+
+Then summarize the reports with the powershell file:
+
+```powershell
+.\courseProjectCode\Metrics\testability-metrics.ps1
+```
+
+The script does not run its own tests, it simply reads test reports.

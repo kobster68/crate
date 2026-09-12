@@ -52,6 +52,8 @@ public class CodeStructureMetrics {
         // See the output of the cloc command in the console
         processBuilder.inheritIO();
 
+        System.out.println("Running cloc...");
+
         // Start the process and wait for it to finish
         try {
             Process process = processBuilder.start();

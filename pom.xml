@@ -412,6 +412,7 @@
         <module>jlink-jdk</module>
         <module>app</module>
         <module>benchmarks</module>
+        <module>courseProjectCode</module>
     </modules>
 
     <profiles>

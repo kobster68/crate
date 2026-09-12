@@ -2,9 +2,6 @@ package metrics;
 
 import java.util.Scanner;
 
-import metrics.CodeStructureMetrics;
-import metrics.TestabilityMetrics;
-
 public class Main {
 	
 	public static void main(String[] args) {

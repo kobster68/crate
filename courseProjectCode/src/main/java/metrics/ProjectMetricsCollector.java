@@ -64,6 +64,17 @@ public class ProjectMetricsCollector {
             + "    </modules>";
     
     private static List<String> modules;
+
+    // Both collectors use this method so their module selection stays consistent.
+    public static List<String> getModuleNames() {
+        Pattern moduleTagRegex = Pattern.compile("<module>((?!benchmarks|courseProjectCode).*?)</module>");
+        Matcher tagMatcher = moduleTagRegex.matcher(pomFile);
+        List<String> moduleNames = new ArrayList<>();
+        while (tagMatcher.find()) {
+            moduleNames.add(tagMatcher.group(1));
+        }
+        return moduleNames;
+    }
     
     public static void main(String[] args) {
         if (args.length < 1) {
@@ -77,13 +88,7 @@ public class ProjectMetricsCollector {
         .setLanguageLevel(LanguageLevel.JAVA_22)
             .setTabSize(1);
 
-        Pattern moduleTagRegex = Pattern.compile("<module>((?!benchmarks|courseProjectCode).*?)</module>");
-        Matcher tagMatcher = moduleTagRegex.matcher(pomFile);
-
-        modules = new ArrayList<String>();
-        while (tagMatcher.find()) {
-            modules.add(tagMatcher.group(1));
-        }
+        modules = getModuleNames();
         //Build each Module path relative to provided base directory
         List<Path> modulePaths = modules.stream().map(module -> Path.of(baseDir,module)).collect(Collectors.toList());
 
@@ -154,24 +159,6 @@ public class ProjectMetricsCollector {
        
         // Produce CSV files for Maintainability metrics
         writeMaintainabilityCSV(prodFileMetrics);
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-
-       
-
-
-
     }
     
     
@@ -233,11 +220,6 @@ public class ProjectMetricsCollector {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        
-        
-        
-        
     }
     
     /**

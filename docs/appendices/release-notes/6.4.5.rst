@@ -46,4 +46,24 @@ series.
 Fixes
 =====
 
-None
+- Fixed an issue that could cause statements including a cross join and an outer
+  join plus any other join to drop the outer join condition, leading to
+  incorrect results.
+
+- Fixed an issue that caused casting string values to a longer ``bit`` string to
+  fail with an ``StringIndexOutOfBoundsException`` instead of filling up the gap
+  with ``0``.
+
+- Fixed an issue that caused casting ``null`` to the ``bit`` type to fail.
+
+- Fixed an issue that caused CrateDB to choose the wrong relation if a parent
+  relation alias clashed with a local scoped relation name.
+
+- Fixed decoding of ``interval`` values sent from PostgreSQL wire protocol
+  clients using text format in the ``x hours y minutes ...`` style.
+
+- Fixed an issue that could lead to out of memory errors if using the
+  ``percentile`` aggregation.
+
+- Fixed an issue causing cache to retain some heavy structures, potentially
+  leading to an ``OutOfMemoryError``.

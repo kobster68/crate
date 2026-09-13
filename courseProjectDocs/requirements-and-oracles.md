@@ -20,9 +20,20 @@ crate/docs/general/ddl/replication.rst
 ## Non-Functional Requirements
 | Requirement | Source |
 |---|---|
-| Fault tolerance: When a primary shard is lost, CrateDB shall promote a replica shard to primary shard. | replication.rst, line 18 |
-| Recoverability: Following node loss, CrateDB shall attempt to restore the required replica count for affected shards. | replication.rst, line 102 |
-| Fault isolation: CrateDB shall not make multiple of the same shard in a single node. | replication.rst, line 161 |
+| Fault tolerance: When a primary shard is lost, CrateDB shall promote a replica shard to primary shard | replication.rst, line 18 |
+| Recoverability: Following node loss, CrateDB shall attempt to restore the required replica count for affected shards | replication.rst, line 102 |
+| Fault isolation: CrateDB shall not make multiple of the same shard in a single node | replication.rst, line 161 |
 
 ## Test Oracles
-todo
+| Behavior | Test Oracle |
+| --- | --- |
+| Selecting all columns | Returned columns match the schema |
+| Column aliases | The column name matches the alias |
+| DISTINCT | Input values A A B return only A and B |
+| WHERE equality | Only rows matching the specified value are returned |
+| COUNT(column) | Values A NULL B result in a count of 2 |
+| COUNT(DISTINCT column) | Values A A NULL B result in a count of 2 |
+| COUNT(*) | Three of the same rows result in a count of 3 |
+| Fault tolerance | A replica becomes the new primary after primary is lost |
+| Recoverability | The desired replica count is achieved after recovery |
+| Fault isolation | Each copy of a specific shard is on a different node |

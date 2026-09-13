@@ -1,6 +1,6 @@
 # CrateDB Quality Metrics
 
-These collectors measure production Java line counts, comment density, test counts, and line coverage. The three CSV files in this folder are the results for the report.
+These collectors measure production Java line counts, comment density, test counts, and line coverage. The three CSV files in the `output/` folder are the results for the report.
 
 ## Before you start
 
@@ -16,8 +16,8 @@ Open PowerShell in the **crate repository root**, where `pom.xml` and `mvnw.cmd`
 
 This reads production Java files and writes:
 
-- `courseProjectCode/Metrics/MetricsPerFile.csv`: code, comment, blank, and total lines per file.
-- `courseProjectCode/Metrics/MetricsPerModule.csv`: line totals and comment density per module.
+- `courseProjectCode/Metrics/output/MetricsPerFile.csv`: code, comment, blank, and total lines per file.
+- `courseProjectCode/Metrics/output/MetricsPerModule.csv`: line totals and comment density per module.
 
 Comment density is comment-only lines divided by total physical lines, multiplied by 100. Files that JavaParser cannot parse use an approximate fallback; the collector prints a summary.
 
@@ -45,13 +45,13 @@ JaCoCo converts the recorded coverage into reports, including each module's `tar
 .\mvnw.cmd -pl courseProjectCode compile exec:java "-Dexec.mainClass=metrics.TestabilityCollector" "-Dexec.args=--all-modules ." "-Dcheckstyle.skip"
 ```
 
-This reads the new XML reports and writes `courseProjectCode/Metrics/TestabilityPerModule.csv`. It records suites, tests, failures, errors, skipped tests, and line coverage for each selected module.
+This reads the new XML reports and writes `courseProjectCode/Metrics/output/TestabilityPerModule.csv`. It records suites, tests, failures, errors, skipped tests, and line coverage for each selected module.
 
 Line coverage is covered executable lines divided by covered plus missed executable lines, multiplied by 100. This is different from the physical line counts in the maintainability files.
 
 ## Reading the results
 
-- Both collectors use the same fixed module list in `ProjectMetricsCollector.java`. Source code is in `courseProjectCode/src/main/java/metrics/`.
+- Both collectors use the same fixed module list in `ProjectMetricsCollector.java`. Source code is in `courseProjectCode/Metrics/src/main/java/metrics/`.
 - Blank values mean the measurement is unavailable, not zero. `Reports read` means reports were found, not that all tests passed.
 - Test counts come from the Surefire XML summary attributes. They include integration tests; repeated executions and flaky results are not counted separately.
 - Our September 12, 2026 run produced reports for 19 of 25 modules. The CSV records 6 failures, 13 errors, and 107 skipped tests. Windows file/link handling, hostname resolution, and an Azure HTTP transport issue affected the run.

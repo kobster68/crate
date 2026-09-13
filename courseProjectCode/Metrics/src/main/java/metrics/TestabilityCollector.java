@@ -76,7 +76,7 @@ public class TestabilityCollector {
     }
 
     public static void writeModulesCsv(Path repository, List<String> moduleNames) throws Exception {
-        Path output = repository.resolve("courseProjectCode/Metrics/TestabilityPerModule.csv");
+        Path output = repository.resolve("courseProjectCode/Metrics/output/TestabilityPerModule.csv");
         Files.createDirectories(output.toAbsolutePath().getParent());
         try (BufferedWriter writer = Files.newBufferedWriter(output)) {
             writer.write("Module,Status,Suites,Tests,Failures,Errors,Skipped,MissedLines,CoveredLines,LineCoveragePct");

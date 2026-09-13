@@ -163,8 +163,8 @@ public class ProjectMetricsCollector {
     
     
     private static void writeMaintainabilityCSV(List<FileMetrics> files) {
-        Path perFilePath = Path.of(baseDir, "courseProjectCode", "Metrics", "MetricsPerFile.csv");
-        Path perModulePath = Path.of(baseDir, "courseProjectCode", "Metrics", "MetricsPerModule.csv");
+        Path perFilePath = Path.of(baseDir, "courseProjectCode", "Metrics", "output", "MetricsPerFile.csv");
+        Path perModulePath = Path.of(baseDir, "courseProjectCode", "Metrics", "output", "MetricsPerModule.csv");
         // Group file metrics by module
         Map<String, List<FileMetrics>> fileMetricsByModule = files.stream()
                 .collect(Collectors.groupingBy(FileMetrics::module));
@@ -174,6 +174,7 @@ public class ProjectMetricsCollector {
                 .toList();
         // Create the CSV files if they don't exist
         try {
+            Files.createDirectories(perModulePath.getParent());
             if (!Files.exists(perModulePath))
                 Files.createFile(perModulePath);
             if (!Files.exists(perFilePath))

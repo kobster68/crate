@@ -24,6 +24,11 @@ Evaluate CrateDB’s maintainability and testability using programmatically coll
 - **Lines of Code (LOC):** Measure production Java code size per file and module.
 - **Comment Density:** Calculate comment-only lines divided by total lines as a percentage.
 
+Some Metrics we plan to collect in the future are: 
+  - Cyclomatic complexity
+  - Coupling / Cohesion between modules
+  - Potentially outlining certain code smells
+
 These metrics help identify large files and modules and compare how many comments there are.
 
 ### Testability

@@ -69,3 +69,5 @@ coverage reported by JaCoCo.
 Both files combine the module results into simple HTML tables.
 Running the commands above creates the underlying reports, but does
 not automatically recreate these summary files.
+
+The summary files are created by manually inserting the values.

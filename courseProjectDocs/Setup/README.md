@@ -59,3 +59,13 @@ This Setup folder contains:
 - `testResults.html` — a summary of passed, failed, and skipped tests.
 - `testCoverage.html` — a summary of code coverage.
 - `report.md` — the environment setup and observations.
+
+## How the Saved Summaries Were Made
+
+testResults.html summarizes the test counts reported by Maven Surefire
+for each module. testCoverage.html summarizes the line and branch
+coverage reported by JaCoCo.
+
+Both files combine the module results into simple HTML tables.
+Running the commands above creates the underlying reports, but does
+not automatically recreate these summary files.

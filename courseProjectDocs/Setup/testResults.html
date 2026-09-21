@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CrateDB Baseline Test Results</title>
+</head>
+<body>
+  <h1>CrateDB Baseline Test Results</h1>
+  <p>Run on September 19, 2026.</p>
+  <p><code>.\mvnw.cmd -T1 -fae -pl '!benchmarks,!courseProjectCode' "-Dmaven.test.failure.ignore=true" test</code></p>
+
+  <h2>Summary</h2>
+  <table border="1" cellpadding="5">
+    <tr><th>Suites</th><th>Tests</th><th>Passed</th><th>Failed</th><th>Errors</th><th>Skipped</th></tr>
+    <tr><td>1,277</td><td>11,556</td><td>11,429</td><td>7</td><td>13</td><td>107</td></tr>
+  </table>
+  <p>Maven completed successfully because test failures were allowed so every module could run.</p>
+
+  <h2>Results by Module</h2>
+  <table border="1" cellpadding="5">
+    <tr><th>Module</th><th>Suites</th><th>Tests</th><th>Failed</th><th>Errors</th><th>Skipped</th></tr>
+    <tr><td>app</td><td>2</td><td>4</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>extensions/functions</td><td>9</td><td>121</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>extensions/jmx-monitoring</td><td>2</td><td>8</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>extensions/lang-js</td><td>3</td><td>37</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>jlink-jdk</td><td colspan="5">No test reports</td></tr>
+    <tr><td>libs/azure-testing</td><td colspan="5">No test reports</td></tr>
+    <tr><td>libs/cli</td><td colspan="5">No test reports</td></tr>
+    <tr><td>libs/dex</td><td>16</td><td>130</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>libs/es-x-content</td><td colspan="5">No test reports</td></tr>
+    <tr><td>libs/guice</td><td colspan="5">No test reports</td></tr>
+    <tr><td>libs/opendal</td><td>1</td><td>2</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>libs/pgwire</td><td>1</td><td>22</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>libs/shared</td><td>10</td><td>62</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>libs/sql-parser</td><td>13</td><td>329</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>plugins/cr8-copy-s3</td><td>2</td><td>9</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>plugins/crate-copy-azure</td><td>3</td><td>12</td><td>0</td><td>2</td><td>0</td></tr>
+    <tr><td>plugins/dns-discovery</td><td>1</td><td>5</td><td>4</td><td>0</td><td>0</td></tr>
+    <tr><td>plugins/es-analysis-common</td><td>5</td><td>37</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>plugins/es-analysis-phonetic</td><td>2</td><td>8</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>plugins/es-discovery-ec2</td><td colspan="5">No test reports</td></tr>
+    <tr><td>plugins/es-repository-azure</td><td>4</td><td>11</td><td>0</td><td>3</td><td>0</td></tr>
+    <tr><td>plugins/es-repository-s3</td><td>3</td><td>11</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>plugins/es-repository-url</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>plugins/repository-gcs</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+    <tr><td>server</td><td>1,198</td><td>10,746</td><td>3</td><td>8</td><td>107</td></tr>
+  </table>
+</body>
+</html>

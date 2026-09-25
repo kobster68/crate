@@ -19,4 +19,12 @@ public class TimeZoneParserTest {
     public void test_utc_returns_default_timezone() {
         assertThat(TimeZoneParser.parseTimeZone("UTC")).isSameAs(DateTimeZone.UTC);
     }
+
+    @Test
+    public void test_positive_offset_includes_minutes() {
+        DateTimeZone timezone = TimeZoneParser.parseTimeZone("+02:30");
+
+        assertThat(timezone.isFixed()).isTrue();
+        assertThat(timezone.getOffset(0L)).isEqualTo(150 * 60 * 1000);
+    }
 }

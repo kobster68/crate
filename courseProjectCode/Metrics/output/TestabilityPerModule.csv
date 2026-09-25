@@ -1,0 +1,26 @@
+Module,Status,Suites,Tests,Failures,Errors,Skipped,MissedLines,CoveredLines,LineCoveragePct
+"app",Reports read,2,4,0,0,0,131,0,0.00
+"extensions/functions",Reports read,9,121,0,0,0,94,710,88.31
+"extensions/jmx-monitoring",Reports read,2,8,0,0,0,161,123,43.31
+"extensions/lang-js",Reports read,3,37,0,0,0,9,142,94.04
+"jlink-jdk",No test reports,,,,,,,,
+"libs/azure-testing",No test reports,,,,,,,,
+"libs/cli",No test reports,,,,,,,,
+"libs/dex",Reports read,16,130,0,0,0,180,807,81.76
+"libs/es-x-content",No test reports,,,,,,,,
+"libs/guice",No test reports,,,,,,,,
+"libs/opendal",Reports read,1,2,0,0,0,129,7,5.15
+"libs/pgwire",Reports read,1,22,0,0,0,65,180,73.47
+"libs/shared",Reports read,10,62,0,0,0,1236,366,22.85
+"libs/sql-parser",Reports read,13,329,0,0,0,4943,12529,71.71
+"plugins/cr8-copy-s3",Reports read,2,9,0,0,0,30,88,74.58
+"plugins/crate-copy-azure",Reports read,3,12,0,2,0,12,89,88.12
+"plugins/dns-discovery",Reports read,1,5,4,0,0,33,55,62.50
+"plugins/es-analysis-common",Reports read,5,37,0,0,0,1256,334,21.01
+"plugins/es-analysis-phonetic",Reports read,2,8,0,0,0,220,98,30.82
+"plugins/es-discovery-ec2",No test reports,,,,,,,,
+"plugins/es-repository-azure",Reports read,4,11,0,3,0,8,65,89.04
+"plugins/es-repository-s3",Reports read,3,11,0,0,0,4,92,95.83
+"plugins/es-repository-url",Reports read,1,1,0,0,0,35,62,63.92
+"plugins/repository-gcs",Reports read,1,1,0,0,0,32,37,53.62
+"server",Reports read,1198,10746,2,8,107,21114,119512,84.99

@@ -27,4 +27,12 @@ public class TimeZoneParserTest {
         assertThat(timezone.isFixed()).isTrue();
         assertThat(timezone.getOffset(0L)).isEqualTo(150 * 60 * 1000);
     }
+
+    @Test
+    public void test_negative_offset_applies_sign_to_minutes() {
+        DateTimeZone timezone = TimeZoneParser.parseTimeZone("-02:30");
+
+        assertThat(timezone.isFixed()).isTrue();
+        assertThat(timezone.getOffset(0L)).isEqualTo(-150 * 60 * 1000);
+    }
 }

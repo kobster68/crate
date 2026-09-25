@@ -6,9 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
+// Tests TimeZoneParser class
+// Contains one new coverage test and four new edge case tests.
 public class TimeZoneParserTest {
 
-    // A missing time zone should give a clear error message.
+    // Coverage: a missing time zone should give a clear error message.
     @Test
     public void test_null_timezone_is_rejected() {
         assertThatThrownBy(() -> TimeZoneParser.parseTimeZone(null))
@@ -16,7 +18,7 @@ public class TimeZoneParserTest {
             .hasMessage("invalid time zone value NULL");
     }
 
-    // Minutes must be between 0 and 59, so 60 should give an error.
+    // Edge case: minutes must be between 0 and 59, so 60 should give an error.
     @Test
     public void test_out_of_range_offset_minutes_are_rejected() {
         assertThatThrownBy(() -> TimeZoneParser.parseTimeZone("+02:60"))
@@ -24,7 +26,7 @@ public class TimeZoneParserTest {
             .hasMessage("invalid time zone value '+02:60'");
     }
 
-    // +02:30 means 2 hours and 30 minutes ahead of UTC.
+    // Edge case: +02:30 must include the extra 30 minutes ahead of UTC.
     @Test
     public void test_positive_offset_includes_minutes() {
         DateTimeZone timezone = TimeZoneParser.parseTimeZone("+02:30");
@@ -34,7 +36,7 @@ public class TimeZoneParserTest {
         assertThat(timezone.getOffset(0L)).isEqualTo(150 * 60 * 1000);
     }
 
-    // -02:30 means the full 2 hours and 30 minutes are behind UTC.
+    // Edge case: -02:30 means the full 2 hours and 30 minutes are behind UTC.
     @Test
     public void test_negative_offset_applies_sign_to_minutes() {
         DateTimeZone timezone = TimeZoneParser.parseTimeZone("-02:30");
@@ -43,7 +45,7 @@ public class TimeZoneParserTest {
         assertThat(timezone.getOffset(0L)).isEqualTo(-150 * 60 * 1000);
     }
 
-    // Minutes must be numbers, so "xx" should give a clear error message.
+    // Edge case: minutes must be numbers, so "xx" should give a clear error message.
     @Test
     public void test_non_numeric_offset_minutes_are_rejected() {
         assertThatThrownBy(() -> TimeZoneParser.parseTimeZone("+02:xx"))

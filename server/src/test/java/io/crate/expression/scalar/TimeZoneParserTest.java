@@ -35,4 +35,11 @@ public class TimeZoneParserTest {
         assertThat(timezone.isFixed()).isTrue();
         assertThat(timezone.getOffset(0L)).isEqualTo(-150 * 60 * 1000);
     }
+
+    @Test
+    public void test_non_numeric_offset_minutes_are_rejected() {
+        assertThatThrownBy(() -> TimeZoneParser.parseTimeZone("+02:xx"))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessage("invalid time zone value '+02:xx'");
+    }
 }

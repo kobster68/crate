@@ -26,6 +26,7 @@ import static io.crate.protocols.postgres.PGErrorStatus.INTERNAL_ERROR;
 import static io.crate.testing.Asserts.assertThat;
 import static io.crate.testing.TestingHelpers.printedTable;
 import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -776,18 +777,57 @@ public class GroupByAggregateTest extends IntegTestCase {
     @UseRandomizedSchema(random = false)
     @Test
     public void testGlobalCountDistinctColumnReuse() throws Exception {
-        execute("select count(distinct good), count(distinct department), count(distinct good) from employees");
-        assertThat(response.rowCount()).isEqualTo(1);
-        assertThat(response.rows()[0][0]).isEqualTo(2L);
-        assertThat(response.rows()[0][1]).isEqualTo(4L);
-        assertThat(response.rows()[0][2]).isEqualTo(2L);
+        String query = "select count(distinct good), count(distinct department), count(distinct good) " +
+            "from employees " +
+            "having count(distinct department) > 0";
 
-        execute("explain (costs false) select count(distinct good), count(distinct department), count(distinct good) from employees");
+        execute("analyze");
+        execute("explain (costs false) " + query);
         assertThat(response).hasLines(
             "Eval[count(DISTINCT good), count(DISTINCT department), count(DISTINCT good)]",
-            "  └ HashAggregate[count(DISTINCT good), count(DISTINCT department)]",
-            "    └ Collect[doc.employees | [good, department] | true]"
+            "  └ Filter[(count(DISTINCT department) > 0)]",
+            "    └ NestedLoopJoin[CROSS]",
+            "      ├ HashAggregate[count(DISTINCT good)]",
+            "      │  └ GroupHashAggregate[good]",
+            "      │    └ Collect[doc.employees | [good] | true]",
+            "      └ HashAggregate[count(DISTINCT department)]",
+            "        └ GroupHashAggregate[department]",
+            "          └ Collect[doc.employees | [department] | true]"
         );
+
+        execute(query);
+        assertThat(response)
+            .hasRowCount(1)
+            .hasRows(new Object[]{2L, 4L, 2L});
+    }
+
+    @UseRandomizedOptimizerRules(0)
+    @UseRandomizedSchema(random = false)
+    @Test
+    public void test_global_count_distinct_three_columns() throws Exception {
+        String query = "select count(distinct good), count(distinct department), count(distinct name) from employees";
+        // The RewriteDistinctAggToGroupBy optimization rule runs only when
+        // the table-size criteria is satisfied, and for that the table stats are needed.
+        execute("analyze");
+        execute("explain (costs false) " + query);
+        assertThat(response).hasLines(
+            "NestedLoopJoin[CROSS]",
+            "  ├ NestedLoopJoin[CROSS]",
+            "  │  ├ HashAggregate[count(DISTINCT good)]",
+            "  │  │  └ GroupHashAggregate[good]",
+            "  │  │    └ Collect[doc.employees | [good] | true]",
+            "  │  └ HashAggregate[count(DISTINCT department)]",
+            "  │    └ GroupHashAggregate[department]",
+            "  │      └ Collect[doc.employees | [department] | true]",
+            "  └ HashAggregate[count(DISTINCT name)]",
+            "    └ GroupHashAggregate[name]",
+            "      └ Collect[doc.employees | [name] | true]"
+        );
+
+        execute(query);
+        assertThat(response)
+            .hasRowCount(1)
+            .hasRows(new Object[]{2L, 4L, 6L});
     }
 
     @Test
@@ -1482,7 +1522,7 @@ public class GroupByAggregateTest extends IntegTestCase {
         execute("analyze");
         execute("explain (costs false) select distinct id from m.tbl limit 2");
         assertThat(response).hasLines(
-            "LimitDistinct[2::bigint;0 | [id]]",
+            "LimitDistinct[2;0 | [id]]",
             "  └ Collect[m.tbl | [id] | true]"
         );
         execute("select distinct id from m.tbl limit 2");
@@ -1610,5 +1650,79 @@ public class GroupByAggregateTest extends IntegTestCase {
                     .isEqualTo(0L);
             }
         });
+    }
+
+    @Test
+    public void test_group_by_on_two_string_cols() {
+        execute("CREATE TABLE tbl(tag string, country string) CLUSTERED INTO 1 SHARDS");
+        execute("""
+            INSERT INTO tbl(tag, country) VALUES
+            ('null', 'null'),
+            ('foo', 'Austria'),
+            ('foo', 'Germany'),
+            ('foo', 'Greece'),
+            ('foo', 'Greece'),
+            ('bar', 'Austria'),
+            ('bar', 'null'),
+            ('bar', 'Germany'),
+            ('bar', 'Germany'),
+            ('bar', 'Greece'),
+            ('bar', 'Austria'),
+            ('bar', 'null'),
+            ('null', 'null')
+            """);
+        execute("REFRESH table tbl");
+        execute("SELECT tag, country, count(*) FROM tbl GROUP BY 1, 2 ORDER BY count(*) DESC, 1, 2");
+        assertThat(response).hasRows(
+            "bar| Austria| 2",
+            "bar| Germany| 2",
+            "bar| null| 2",
+            "foo| Greece| 2",
+            "null| null| 2",
+            "bar| Greece| 1",
+            "foo| Austria| 1",
+            "foo| Germany| 1");
+    }
+
+    /// Covers the NULL group of a multi-key GROUP BY: a doc without a value for a key column has no
+    /// Lucene ordinal for it, so the ordinal based grouping has to route it to its own group.
+    @Test
+    public void test_group_by_on_two_string_cols_with_nulls() {
+        execute("CREATE TABLE tbl(tag string, country string) CLUSTERED INTO 1 SHARDS");
+        execute("""
+            INSERT INTO tbl(tag, country) VALUES
+            ('foo', 'Austria'),
+            ('foo', NULL),
+            ('foo', NULL),
+            (NULL, 'Austria'),
+            (NULL, NULL)
+            """);
+        execute("REFRESH table tbl");
+        execute("SELECT tag, country, count(*) FROM tbl GROUP BY 1, 2 ORDER BY 1 NULLS LAST, 2 NULLS LAST");
+        assertThat(response).hasRows(
+            "foo| Austria| 1",
+            "foo| NULL| 2",
+            "NULL| Austria| 1",
+            "NULL| NULL| 1");
+    }
+
+    /// The same aggregation over three keys, one of which is not a string, to make sure the mixed-type
+    /// case still produces correct results via the generic group-by.
+    @Test
+    public void test_group_by_on_string_and_non_string_cols() {
+        execute("CREATE TABLE tbl(tag string, country string, yr int) CLUSTERED INTO 1 SHARDS");
+        execute("""
+            INSERT INTO tbl(tag, country, yr) VALUES
+            ('foo', 'Austria', 2024),
+            ('foo', 'Austria', 2024),
+            ('foo', 'Austria', 2025),
+            ('bar', 'Greece', 2025)
+            """);
+        execute("REFRESH table tbl");
+        execute("SELECT tag, country, yr, count(*) FROM tbl GROUP BY 1, 2, 3 ORDER BY 1, 2, 3");
+        assertThat(response).hasRows(
+            "bar| Greece| 2025| 1",
+            "foo| Austria| 2024| 2",
+            "foo| Austria| 2025| 1");
     }
 }

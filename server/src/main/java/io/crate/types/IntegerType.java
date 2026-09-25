@@ -24,15 +24,19 @@ package io.crate.types;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.apache.lucene.util.NumericUtils;
 import org.apache.lucene.util.RamUsageEstimator;
 import org.elasticsearch.common.io.stream.StreamInput;
 import org.elasticsearch.common.io.stream.StreamOutput;
+import org.elasticsearch.common.xcontent.XContentParser;
 
 import io.crate.Streamer;
 import io.crate.execution.dml.IntIndexer;
 import io.crate.execution.dml.ValueIndexer;
+import io.crate.expression.reference.doc.lucene.IntegerColumnReference;
+import io.crate.expression.reference.doc.lucene.LuceneCollectorExpression;
 import io.crate.metadata.ColumnIdent;
 import io.crate.metadata.Reference;
 import io.crate.metadata.RelationName;
@@ -64,6 +68,17 @@ public class IntegerType extends DataType<Integer> implements Streamer<Integer>,
             return NumericUtils.sortableBytesToInt(packedPoint, 0);
         }
 
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @Override
+        public LuceneCollectorExpression<Number> getLuceneExpression(Reference ref,
+                                                                     Predicate<Reference> isParentIgnored) {
+            return (LuceneCollectorExpression) new IntegerColumnReference(ref.storageIdent());
+        }
+
+        @Override
+        public Integer decode(DataType<Number> type, XContentParser parser) throws IOException {
+            return parser.intValue();
+        }
     };
 
     private IntegerType() {

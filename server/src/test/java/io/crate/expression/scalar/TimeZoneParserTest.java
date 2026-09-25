@@ -8,6 +8,7 @@ import org.junit.Test;
 
 public class TimeZoneParserTest {
 
+    // A missing time zone should give a clear error message.
     @Test
     public void test_null_timezone_is_rejected() {
         assertThatThrownBy(() -> TimeZoneParser.parseTimeZone(null))
@@ -15,19 +16,23 @@ public class TimeZoneParserTest {
             .hasMessage("invalid time zone value NULL");
     }
 
+    // "UTC" should return the standard UTC time zone.
     @Test
     public void test_utc_returns_default_timezone() {
         assertThat(TimeZoneParser.parseTimeZone("UTC")).isSameAs(DateTimeZone.UTC);
     }
 
+    // +02:30 means 2 hours and 30 minutes ahead of UTC.
     @Test
     public void test_positive_offset_includes_minutes() {
         DateTimeZone timezone = TimeZoneParser.parseTimeZone("+02:30");
 
         assertThat(timezone.isFixed()).isTrue();
+        // The offset is in milliseconds: 150 minutes times 60 seconds times 1000.
         assertThat(timezone.getOffset(0L)).isEqualTo(150 * 60 * 1000);
     }
 
+    // -02:30 means the full 2 hours and 30 minutes are behind UTC.
     @Test
     public void test_negative_offset_applies_sign_to_minutes() {
         DateTimeZone timezone = TimeZoneParser.parseTimeZone("-02:30");
@@ -36,6 +41,7 @@ public class TimeZoneParserTest {
         assertThat(timezone.getOffset(0L)).isEqualTo(-150 * 60 * 1000);
     }
 
+    // Minutes must be numbers, so "xx" should give a clear error message.
     @Test
     public void test_non_numeric_offset_minutes_are_rejected() {
         assertThatThrownBy(() -> TimeZoneParser.parseTimeZone("+02:xx"))

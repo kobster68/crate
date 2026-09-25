@@ -16,10 +16,12 @@ public class TimeZoneParserTest {
             .hasMessage("invalid time zone value NULL");
     }
 
-    // "UTC" should return the standard UTC time zone.
+    // Minutes must be between 0 and 59, so 60 should give an error.
     @Test
-    public void test_utc_returns_default_timezone() {
-        assertThat(TimeZoneParser.parseTimeZone("UTC")).isSameAs(DateTimeZone.UTC);
+    public void test_out_of_range_offset_minutes_are_rejected() {
+        assertThatThrownBy(() -> TimeZoneParser.parseTimeZone("+02:60"))
+            .isExactlyInstanceOf(IllegalArgumentException.class)
+            .hasMessage("invalid time zone value '+02:60'");
     }
 
     // +02:30 means 2 hours and 30 minutes ahead of UTC.

@@ -48,6 +48,14 @@ See [README.md](README.md) for instructions to reproduce the run.
 
 0
 
+### Coverage Comparison
+
+These tests add direct coverage for cases that were previously tested only indirectly.
+
+The null test checks that a missing time zone is rejected. The positive and negative offset tests check the HH:MM format in both directions, including minutes and negative values. The last two tests check invalid input: one uses an impossible minute value, and the other uses nonnumeric minutes. Both verify that the parser returns the expected error.
+
+The null test increased coverage because it reaches the parser’s dedicated null-check branch. The positive and negative tests add coverage for minute parsing and negative-offset handling. The invalid-input tests re-use the same exception-handling code, but they protect different validation cases.
+
 ## Michael - Hex Tests
 
 Seven unit tests were added in

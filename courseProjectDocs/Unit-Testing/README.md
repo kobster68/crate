@@ -17,7 +17,7 @@ java -version
 The version should show Java 26. Maven is included through the wrapper.
 The commands below compile the code before running tests.
 
-## Run Only My New Tests
+## Run TimeZoneParser Tests
 
 ```powershell
 .\mvnw.cmd -T1 -pl server -am test "-Dtest=TimeZoneParserTest" "-Dsurefire.failIfNoSpecifiedTests=false"
@@ -35,6 +35,59 @@ The detailed results are saved in:
 ```text
 server/target/surefire-reports/io.crate.expression.scalar.TimeZoneParserTest.txt
 ```
+
+## Run Hex Tests
+
+From the repository root, run:
+
+```powershell
+.\mvnw.cmd -T1 -pl libs/shared -am test "-Dtest=HexTest" "-Dsurefire.failIfNoSpecifiedTests=false"
+```
+This runs the seven tests in `HexTest.java`. Expected results:
+7 tests run, 0 failures, 0 errors, and 0 skipped.
+
+The detailed results are saved in:
+
+```text
+libs/shared/target/surefire-reports/io.crate.common.HexTest.txt
+```
+
+## Reproduce Shared-Module Coverage Before HexTest
+
+To run the existing shared-module tests while excluding HexTest:
+
+```powershell
+.\mvnw.cmd -T1 -pl libs/shared -am clean test jacoco:report "-Dtest=!HexTest" "-Dsurefire.failIfNoSpecifiedTests=false"
+```
+
+Expected results: 62 tests run, 0 failures, 0 errors, and 0 skipped.
+
+The `!HexTest` filter excludes the seven new tests without removing
+their source file. This reproduces the original test selection.
+
+Save the generated reports before running the next section:
+its `clean` step will delete them.
+
+Use the same source revision and Java version for both runs so
+the comparison measures the effect of adding HexTest.
+
+## Run Shared-Module Tests and Generate Coverage 
+
+From the repository root, run:
+
+```powershell
+.\mvnw.cmd -T1 -pl libs/shared -am clean test jacoco:report
+```
+
+This runs all tests in `libs/shared`, including the seven Hex tests.
+Expected results: 69 tests run, 0 failures, 0 errors, and 0 skipped.
+
+The clean step removes previous build results and coverage data.
+Save any existing reports you need before running it.
+
+Open `libs/shared/target/site/jacoco/index.html` to view module coverage.
+For Hex coverage, open
+`libs/shared/target/site/jacoco/io.crate.common/Hex.html`.
 
 ## Run the Full Baseline Test Suite
 

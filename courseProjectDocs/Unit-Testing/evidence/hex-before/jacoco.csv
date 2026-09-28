@@ -1,0 +1,65 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+crate-libs-shared,io.crate.common.unit,TimeValue,567,0,60,0,117,0,62,0,29,0
+crate-libs-shared,io.crate.common.collections,RefCountedItem,37,73,6,2,5,21,5,4,1,4
+crate-libs-shared,io.crate.common.collections,Lists.RotatedList,53,0,10,0,13,0,8,0,3,0
+crate-libs-shared,io.crate.common.collections,Lists.ReverseList.new ListIterator() {...},101,0,8,0,24,0,15,0,11,0
+crate-libs-shared,io.crate.common.collections,Iterables.FluentIterable.2.new Iterators.AbstractIndexedListIterator() {...},18,0,0,0,2,0,2,0,2,0
+crate-libs-shared,io.crate.common.collections,Sets.1.new AbstractIterator() {...},0,38,0,4,0,8,0,4,0,2
+crate-libs-shared,io.crate.common.collections,EnumSets,70,0,8,0,12,0,8,0,4,0
+crate-libs-shared,io.crate.common.collections,Maps,393,307,66,36,92,66,51,22,12,10
+crate-libs-shared,io.crate.common.collections,MapBuilder,157,0,8,0,38,0,23,0,19,0
+crate-libs-shared,io.crate.common.collections,Iterables.new Iterable() {...},40,0,0,0,6,0,5,0,5,0
+crate-libs-shared,io.crate.common.collections,Sets.new AbstractSet() {...},73,18,12,0,10,2,13,2,7,2
+crate-libs-shared,io.crate.common.collections,CompoundOrdering,72,0,8,0,16,0,11,0,7,0
+crate-libs-shared,io.crate.common.collections,Lists.RandomAccessPartition,5,0,0,0,2,0,1,0,1,0
+crate-libs-shared,io.crate.common.collections,Tuple,17,0,0,0,2,0,2,0,2,0
+crate-libs-shared,io.crate.common.collections,Iterators,209,0,22,0,45,0,27,0,16,0
+crate-libs-shared,io.crate.common.collections,Lists,483,267,66,41,107,78,56,23,18,7
+crate-libs-shared,io.crate.common.collections,Iterators.AbstractIndexedListIterator,91,0,8,0,20,0,15,0,11,0
+crate-libs-shared,io.crate.common.collections,Iterators.new Iterator() {...},48,0,4,0,9,0,5,0,3,0
+crate-libs-shared,io.crate.common.collections,Iterators.new Spliterator() {...},60,0,2,0,9,0,9,0,8,0
+crate-libs-shared,io.crate.common.collections,Iterators.new Iterator() {...},75,0,12,0,12,0,9,0,3,0
+crate-libs-shared,io.crate.common.collections,Iterables,141,0,14,0,34,0,23,0,16,0
+crate-libs-shared,io.crate.common.collections,CartesianList,69,120,11,7,16,22,8,9,2,6
+crate-libs-shared,io.crate.common.collections,Lists.RandomAccessReverseList,4,0,0,0,2,0,1,0,1,0
+crate-libs-shared,io.crate.common.collections,LexicographicalOrdering,70,0,12,0,23,0,11,0,5,0
+crate-libs-shared,io.crate.common.collections,Iterators.MergingIterator.new Comparator() {...},19,0,0,0,2,0,2,0,2,0
+crate-libs-shared,io.crate.common.collections,Lists.LazyMapList,21,0,0,0,6,0,3,0,3,0
+crate-libs-shared,io.crate.common.collections,RingBuffer.new Iterator() {...},5,50,1,5,1,6,1,5,0,3
+crate-libs-shared,io.crate.common.collections,Iterables.FluentIterable,76,0,4,0,15,0,9,0,7,0
+crate-libs-shared,io.crate.common.collections,AbstractIterator.State,0,27,0,0,0,5,0,1,0,1
+crate-libs-shared,io.crate.common.collections,AbstractIterator,24,58,5,6,6,21,6,8,2,6
+crate-libs-shared,io.crate.common.collections,BlockingEvictingQueue,5,18,1,3,0,7,1,4,0,3
+crate-libs-shared,io.crate.common.collections,BorrowedItem,16,0,0,0,7,0,3,0,3,0
+crate-libs-shared,io.crate.common.collections,Iterators.TransformedIterator,30,0,0,0,9,0,5,0,5,0
+crate-libs-shared,io.crate.common.collections,CartesianList.new AbstractList() {...},0,38,0,0,0,5,0,3,0,3
+crate-libs-shared,io.crate.common.collections,Iterators.MergingIterator,62,0,8,0,14,0,7,0,3,0
+crate-libs-shared,io.crate.common.collections,Iterables.FluentIterable.new Iterables.FluentIterable() {...},13,0,0,0,2,0,2,0,2,0
+crate-libs-shared,io.crate.common.collections,Lists.Partition,49,0,0,0,10,0,4,0,4,0
+crate-libs-shared,io.crate.common.collections,Lists.ReverseList,114,0,0,0,26,0,14,0,14,0
+crate-libs-shared,io.crate.common.collections,Sets,71,31,2,0,17,8,5,2,4,2
+crate-libs-shared,io.crate.common.collections,Iterables.FluentIterable.new Iterables.FluentIterable() {...},17,0,0,0,2,0,2,0,2,0
+crate-libs-shared,io.crate.common.collections,Iterators.ConcatenatedIterator,120,0,22,0,30,0,15,0,4,0
+crate-libs-shared,io.crate.common.collections,RingBuffer,8,32,0,0,3,8,1,3,1,3
+crate-libs-shared,io.crate.common.collections,Iterators.PeekingImpl,65,0,10,0,18,0,11,0,6,0
+crate-libs-shared,io.crate.common,Optionals,7,0,0,0,3,0,1,0,1,0
+crate-libs-shared,io.crate.common,Suppliers.ExpiringMemoizingSupplier,99,0,10,0,19,0,9,0,4,0
+crate-libs-shared,io.crate.common,Hex,319,0,16,0,37,0,20,0,12,0
+crate-libs-shared,io.crate.common,Booleans,137,0,30,0,34,0,26,0,11,0
+crate-libs-shared,io.crate.common,MutableFloat,26,0,0,0,10,0,5,0,5,0
+crate-libs-shared,io.crate.common,MutableLong,94,0,10,0,22,0,15,0,10,0
+crate-libs-shared,io.crate.common,MutableObject,23,0,0,0,9,0,5,0,5,0
+crate-libs-shared,io.crate.common,Octal,4,213,2,22,2,39,2,14,0,4
+crate-libs-shared,io.crate.common,Suppliers.MemoizingSupplier,51,0,6,0,14,0,6,0,3,0
+crate-libs-shared,io.crate.common,StringUtils,149,180,28,28,31,48,23,17,7,5
+crate-libs-shared,io.crate.common,Suppliers,34,0,4,0,7,0,5,0,3,0
+crate-libs-shared,io.crate.common,MutableDouble,26,0,0,0,10,0,5,0,5,0
+crate-libs-shared,io.crate.common.concurrent,CompletableFutures,42,38,4,2,10,9,4,4,2,3
+crate-libs-shared,io.crate.common.concurrent,ExpAvgMeasurement,93,0,2,0,23,0,7,0,6,0
+crate-libs-shared,io.crate.common.concurrent,Killable.Token,16,0,2,0,7,0,4,0,3,0
+crate-libs-shared,io.crate.common.concurrent,ConcurrencyLimit,235,0,12,0,51,0,18,0,12,0
+crate-libs-shared,io.crate.common.exceptions,Exceptions,261,65,43,9,71,17,38,8,16,4
+crate-libs-shared,io.crate.common.io,Streams,32,0,0,0,9,0,2,0,2,0
+crate-libs-shared,io.crate.common.io,IOUtils.new FileVisitor() {...},50,0,4,0,16,0,8,0,6,0
+crate-libs-shared,io.crate.common.io,IOUtils,239,0,40,0,70,0,32,0,12,0
+crate-libs-shared,io.crate.common.time,IsoLocale,17,0,0,0,5,0,2,0,2,0

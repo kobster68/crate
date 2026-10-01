@@ -22,6 +22,7 @@ package org.elasticsearch.transport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -105,6 +106,35 @@ public class TransportHandshakerMockStubTests extends ESTestCase {
         assertThat(handshaker.getNumPendingHandshakes()).isEqualTo(1);
 
         channel.close();
+
+        assertThatThrownBy(versionFuture::get)
+            .cause()
+            .isExactlyInstanceOf(TransportException.class)
+            .hasMessageContaining("handshake failed because connection reset");
+        assertThat(handshaker.removeHandlerForHandshake(requestId)).isNull();
+    }
+
+    // Unlike testHandshakeFailsWhenChannelCloses, which closes the channel
+    // after sendHandshake returns, this test stubs the sender to close it
+    // during request dispatch. It covers the timing-specific case where the
+    // connection disappears while the handshake request is being sent.
+    @Test
+    public void testHandshakeFailsIfChannelClosesWhileRequestIsSent() throws Exception {
+        FutureActionListener<Version> versionFuture = new FutureActionListener<>();
+        long requestId = randomLongBetween(1, 10);
+
+        doAnswer(invocation -> {
+            channel.close();
+            return null;
+        }).when(requestSender).sendRequest(node, channel, requestId, Version.CURRENT);
+
+        handshaker.sendHandshake(
+            requestId,
+            node,
+            channel,
+            new TimeValue(30, TimeUnit.SECONDS),
+            versionFuture
+        );
 
         assertThatThrownBy(versionFuture::get)
             .cause()

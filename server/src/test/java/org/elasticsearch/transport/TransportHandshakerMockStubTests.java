@@ -17,6 +17,9 @@
 
 package org.elasticsearch.transport;
 
+// This file contains unique, previously uncovered mocking and stubbing cases
+// identified by comparing it with the normal TransportHandshakerTests file.
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;

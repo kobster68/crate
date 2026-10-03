@@ -62,3 +62,11 @@ The Surefire report is written to:
 ```text
 server/target/surefire-reports/
 ```
+
+## Coverage improvement analysis
+
+The new tests increased coverage for the main `TransportHandshaker` class.
+Instruction coverage increased from 88.71% to 90.86%, and line coverage
+increased from 90.24% to 92.68%. Branch coverage remained at 80.00% because
+the added tests exercised existing channel-close paths rather than adding a
+new branch to the class.

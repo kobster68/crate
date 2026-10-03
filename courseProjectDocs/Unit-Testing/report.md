@@ -22,39 +22,60 @@ cases, without starting a database.
 
 ## New Test Results
 
-### Kobe's recorded TimeZoneParser results
+### Kobe — TimeZoneParser and TransportHandshaker
 
-All five new tests passed. These results cover only `TimeZoneParserTest`,
-not the full project test suite.
+Five tests were added for `TimeZoneParser` and two tests were added for
+`TransportHandshaker`. The tests use JUnit, AssertJ, and Mockito. The
+`TimeZoneParser` tests cover null, valid offset, negative offset, and invalid
+input cases. The `TransportHandshaker` tests mock the handshake request sender
+and simulate a channel closing during a handshake.
 
-- Run date: September 24, 2026 (saved report timestamp).
-- Test execution time: 0.825 seconds.
-- Errors: 0.
-- Skipped tests: 0.
+### Test results
 
-Results were verified from the Maven Surefire report at
-`server/target/surefire-reports/io.crate.expression.scalar.TimeZoneParserTest.txt`.
-See [README.md](README.md) for instructions to reproduce the run.
+The individual new test classes passed as follows:
 
-#### Tests Run
+| Scope | Tests run | Passed | Failed | Errors | Skipped |
+|---|---:|---:|---:|---:|---:|
+| `TimeZoneParserTest` | 5 | 5 | 0 | 0 | 0 |
+| `TransportHandshakerMockStubTests` | 2 | 2 | 0 | 0 | 0 |
 
-5
+The full `server` before and after runs were also recorded. The before run
+excluded both new test classes; the after run included them. The full runs
+encountered unrelated Windows-specific failures. Some of the issues seemed 
+to be related to timeouts due to poor computing power of my laptop. Those 
+results are preserved in the evidence files rather than being reported as 
+completely passing suites.
 
-#### Tests Passed
+| Scope | Tests | Passed | Failed | Errors | Skipped |
+|---|---:|---:|---:|---:|---:|
+| `server`, before | 10,746 | 10,628 | 2 | 9 | 107 |
+| `server`, after | 10,753 | 10,633 | 5 | 8 | 107 |
 
-5
+Evidence: [server before](evidence/server-before/) and
+[server after](evidence/server-after/). See [README.md](README.md) for the
+commands used to reproduce the individual tests.
 
-#### Tests Failed
+### Coverage comparison
 
-0
+The saved JaCoCo reports show the changes most clearly at the class level:
 
-### Coverage Comparison
+| Class | Metric | Before | After | Change |
+|---|---|---:|---:|---:|
+| `TimeZoneParser` | Lines | 95.45% | 100.00% | +4.55 pp |
+| `TimeZoneParser` | Branches | 90.00% | 100.00% | +10.00 pp |
+| `TransportHandshaker` | Instructions | 88.71% | 90.86% | +2.15 pp |
+| `TransportHandshaker` | Lines | 90.24% | 92.68% | +2.44 pp |
+| `TransportHandshaker` | Branches | 80.00% | 80.00% | 0.00 pp |
 
-These tests add direct coverage for cases that were previously tested only indirectly.
+The new tests increased coverage of the parser's null and offset-validation
+paths. The handshaker tests increased line and instruction coverage by testing
+channel-close cleanup, while branch coverage remained unchanged because the
+new cases exercised existing branches.
 
-The null test checks that a missing time zone is rejected. The positive and negative offset tests check the HH:MM format in both directions, including minutes and negative values. The last two tests check invalid input: one uses an impossible minute value, and the other uses nonnumeric minutes. Both verify that the parser returns the expected error.
-
-The null test increased coverage because it reaches the parser’s dedicated null-check branch. The positive and negative tests add coverage for minute parsing and negative-offset handling. The invalid-input tests re-use the same exception-handling code, but they protect different validation cases.
+Saved reports: [before JaCoCo CSV](evidence/server-before/jacoco.csv),
+[after JaCoCo CSV](evidence/server-after/jacoco.csv),
+[before JaCoCo XML](evidence/server-before/jacoco.xml), and
+[after JaCoCo XML](evidence/server-after/jacoco.xml).
 
 ## Michael - Hex Tests
 

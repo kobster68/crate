@@ -52,6 +52,19 @@ The detailed results are saved in:
 libs/shared/target/surefire-reports/io.crate.common.HexTest.txt
 ```
 
+## Run Mocking and Stubbing Tests
+
+From the repository root:
+
+```bash
+./mvnw -T1 -pl server -am test \
+  "-Dtest=TransportHandshakerMockStubTests" \
+  "-Dsurefire.failIfNoSpecifiedTests=false"
+```
+
+Expected result: 2 tests passed. Results are saved in
+`server/target/surefire-reports/`.
+
 ## Reproduce Shared-Module Coverage Before HexTest
 
 To run the existing shared-module tests while excluding HexTest:

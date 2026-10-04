@@ -26,7 +26,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
@@ -134,7 +136,7 @@ public class CountTaskTest extends ESTestCase {
         assertThat(future.isCancelled()).isTrue();
         assertThat(countTask.isClosed()).isTrue();
     }
-    
+
     @Test
     public void testCountFailureBeforeFutureIsReturned() {
         UnhandledServerException error =
@@ -143,7 +145,7 @@ public class CountTaskTest extends ESTestCase {
         CountOperation countOperation = mock(CountOperation.class);
         when(countOperation.count(eq(txnCtx), any(), any(Symbol.class), eq(false)))
             .thenThrow(error);
-    
+
         TestingRowConsumer consumer = new TestingRowConsumer();
         CountTask countTask = new CountTask(
             countPhaseWithId(1),
@@ -158,5 +160,27 @@ public class CountTaskTest extends ESTestCase {
 
         assertThatThrownBy(consumer::getResult)
             .isSameAs(error);
+    }
+    
+    @Test
+    public void testKillBeforeStartedDoesNotCount() {
+        CountOperation countOperation = mock(CountOperation.class);
+        TestingRowConsumer consumer = new TestingRowConsumer();
+        CountTask countTask = new CountTask(
+            countPhaseWithId(1),
+            txnCtx,
+            countOperation,
+            consumer,
+            null,
+            RamAccounting.NO_ACCOUNTING
+        );
+
+        countTask.kill(JobKilledException.of("dummy"));
+        countTask.start();
+        // The consumer should receive the JobKilledException since the task was killed before it started.
+        assertThatThrownBy(consumer::getResult)
+            .isInstanceOf(JobKilledException.class)
+            .hasMessageContaining("dummy");
+        verifyNoInteractions(countOperation);
     }
 }

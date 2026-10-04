@@ -134,4 +134,29 @@ public class CountTaskTest extends ESTestCase {
         assertThat(future.isCancelled()).isTrue();
         assertThat(countTask.isClosed()).isTrue();
     }
+    
+    @Test
+    public void testCountFailureBeforeFutureIsReturned() {
+        UnhandledServerException error =
+            new UnhandledServerException("count failed before returning a future");
+        // Mock the CountOperation to throw an exception when count is called, simulating a failure before returning a future.
+        CountOperation countOperation = mock(CountOperation.class);
+        when(countOperation.count(eq(txnCtx), any(), any(Symbol.class), eq(false)))
+            .thenThrow(error);
+    
+        TestingRowConsumer consumer = new TestingRowConsumer();
+        CountTask countTask = new CountTask(
+            countPhaseWithId(1),
+            txnCtx,
+            countOperation,
+            consumer,
+            null,
+            RamAccounting.NO_ACCOUNTING
+        );
+
+        countTask.start();
+
+        assertThatThrownBy(consumer::getResult)
+            .isSameAs(error);
+    }
 }

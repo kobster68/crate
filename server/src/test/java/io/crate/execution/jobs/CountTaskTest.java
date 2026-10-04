@@ -188,7 +188,7 @@ public class CountTaskTest extends ESTestCase {
     @Test
     public void testZeroCountProducesOneResultRow() throws Exception {
         CompletableFuture<Long> future = CompletableFuture.completedFuture(0L);
-
+        // Arrange: Mock the CountOperation to return a future that completes with zero.
         CountOperation countOperation = mock(CountOperation.class);
         when(countOperation.count(eq(txnCtx), any(), any(Symbol.class), eq(false)))
             .thenReturn(future);

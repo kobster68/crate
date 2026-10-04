@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -182,5 +183,32 @@ public class CountTaskTest extends ESTestCase {
             .isInstanceOf(JobKilledException.class)
             .hasMessageContaining("dummy");
         verifyNoInteractions(countOperation);
+    }
+    
+    @Test
+    public void testZeroCountProducesOneResultRow() throws Exception {
+        CompletableFuture<Long> future = CompletableFuture.completedFuture(0L);
+
+        CountOperation countOperation = mock(CountOperation.class);
+        when(countOperation.count(eq(txnCtx), any(), any(Symbol.class), eq(false)))
+            .thenReturn(future);
+
+        TestingRowConsumer consumer = new TestingRowConsumer();
+        CountTask countTask = new CountTask(
+            countPhaseWithId(1),
+            txnCtx,
+            countOperation,
+            consumer,
+            null,
+            RamAccounting.NO_ACCOUNTING
+        );
+
+        // Act: run the real task.
+        countTask.start();
+
+        // Assert: the result is one row containing zero.
+        List<Object[]> rows = consumer.getResult();
+        assertThat(rows).hasSize(1);
+        assertThat(rows.get(0)).containsExactly(0L);
     }
 }

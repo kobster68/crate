@@ -26,9 +26,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -133,5 +136,79 @@ public class CountTaskTest extends ESTestCase {
 
         assertThat(future.isCancelled()).isTrue();
         assertThat(countTask.isClosed()).isTrue();
+    }
+
+    @Test
+    public void testCountFailureBeforeFutureIsReturned() {
+        UnhandledServerException error =
+            new UnhandledServerException("count failed before returning a future");
+        // Mock the CountOperation to throw an exception when count is called, simulating a failure before returning a future.
+        CountOperation countOperation = mock(CountOperation.class);
+        when(countOperation.count(eq(txnCtx), any(), any(Symbol.class), eq(false)))
+            .thenThrow(error);
+
+        TestingRowConsumer consumer = new TestingRowConsumer();
+        CountTask countTask = new CountTask(
+            countPhaseWithId(1),
+            txnCtx,
+            countOperation,
+            consumer,
+            null,
+            RamAccounting.NO_ACCOUNTING
+        );
+
+        countTask.start();
+
+        assertThatThrownBy(consumer::getResult)
+            .isSameAs(error);
+    }
+    
+    @Test
+    public void testKillBeforeStartedDoesNotCount() {
+        CountOperation countOperation = mock(CountOperation.class);
+        TestingRowConsumer consumer = new TestingRowConsumer();
+        CountTask countTask = new CountTask(
+            countPhaseWithId(1),
+            txnCtx,
+            countOperation,
+            consumer,
+            null,
+            RamAccounting.NO_ACCOUNTING
+        );
+
+        countTask.kill(JobKilledException.of("dummy"));
+        countTask.start();
+        // The consumer should receive the JobKilledException since the task was killed before it started.
+        assertThatThrownBy(consumer::getResult)
+            .isInstanceOf(JobKilledException.class)
+            .hasMessageContaining("dummy");
+        verifyNoInteractions(countOperation);
+    }
+    
+    @Test
+    public void testZeroCountProducesOneResultRow() throws Exception {
+        CompletableFuture<Long> future = CompletableFuture.completedFuture(0L);
+        // Arrange: Mock the CountOperation to return a future that completes with zero.
+        CountOperation countOperation = mock(CountOperation.class);
+        when(countOperation.count(eq(txnCtx), any(), any(Symbol.class), eq(false)))
+            .thenReturn(future);
+
+        TestingRowConsumer consumer = new TestingRowConsumer();
+        CountTask countTask = new CountTask(
+            countPhaseWithId(1),
+            txnCtx,
+            countOperation,
+            consumer,
+            null,
+            RamAccounting.NO_ACCOUNTING
+        );
+
+        // Act: run the real task.
+        countTask.start();
+
+        // Assert: the result is one row containing zero.
+        List<Object[]> rows = consumer.getResult();
+        assertThat(rows).hasSize(1);
+        assertThat(rows.get(0)).containsExactly(0L);
     }
 }

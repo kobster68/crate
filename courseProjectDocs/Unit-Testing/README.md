@@ -17,6 +17,13 @@ java -version
 The version should show Java 26. Maven is included through the wrapper.
 The commands below compile the code before running tests.
 
+Before running the server tests, build and install the server and its required library modules. 
+This also builds the shared test-support classes. Tests are skipped during this setup step.
+
+```powershell
+.\mvnw.cmd -T1 -pl server -am "-DskipTests" install
+```
+
 ## Run TimeZoneParser Tests
 
 ```powershell
@@ -51,6 +58,90 @@ The detailed results are saved in:
 ```text
 libs/shared/target/surefire-reports/io.crate.common.HexTest.txt
 ```
+
+## Run Mocking and Stubbing Tests
+
+From the repository root:
+
+```bash
+./mvnw -T1 -pl server -am test \
+  "-Dtest=TransportHandshakerMockStubTests" \
+  "-Dsurefire.failIfNoSpecifiedTests=false"
+```
+
+Expected result: 2 tests passed. Results are saved in
+`server/target/surefire-reports/`.
+
+
+## Run CountTask Tests
+
+From the repository root, after completing the server dependency setup run: 
+
+```powershell
+.\mvnw.cmd -T1 -pl server test "-Dtest=CountTaskTest"
+```
+
+This runs all five methods in `CountTaskTest.java`: two existing tests
+and three new tests covering immediate counting failure, cancellation
+before starting, and a successful count of zero.
+
+Expected results: 5 tests run, 0 failures, 0 errors, and 0 skipped.
+
+The detailed results are saved in:
+
+```text
+server/target/surefire-reports/io.crate.execution.jobs.CountTaskTest.txt
+```
+
+## Reproduce CountTask Baseline Coverage
+
+From the repository root, after completing the server dependency setup, run:
+
+```powershell
+.\mvnw.cmd -T1 -pl server test jacoco:report "-Dtest=CountTaskTest#testClose+testKillOperationFuture" "-Djacoco.append=false"
+```
+
+This runs only the two original CountTask tests, excluding the three new
+methods without removing their source code.
+
+Expected results: 2 tests run, 0 failures, 0 errors, and 0 skipped.
+
+The `jacoco.append=false` setting starts fresh coverage data so previous
+test runs do not affect this measurement.
+
+Open the generated CountTask coverage report:
+
+```text
+server/target/site/jacoco/io.crate.execution.jobs/CountTask.html
+```
+
+Save the coverage report and the CountTaskTest Surefire results before
+running the after-coverage command, which will overwrite these reports.
+
+
+## Generate CountTask Coverage After Adding Tests
+
+From the repository root, after completing the server dependency setup, run:
+
+```powershell
+.\mvnw.cmd -T1 -pl server test jacoco:report "-Dtest=CountTaskTest" "-Djacoco.append=false"
+```
+
+This runs all five CountTask tests: the two original methods and
+the three new methods.
+
+Expected results: 5 tests run, 0 failures, 0 errors, and 0 skipped.
+
+The command generates fresh coverage data for comparison with the
+CountTask baseline. Open:
+
+```text
+server/target/site/jacoco/io.crate.execution.jobs/CountTask.html
+```
+
+Use the same source revision and Java version for both runs.
+Compare the CountTask class coverage in this report with the saved
+baseline report.
 
 ## Reproduce Shared-Module Coverage Before HexTest
 

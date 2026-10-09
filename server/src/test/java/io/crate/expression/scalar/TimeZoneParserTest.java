@@ -73,4 +73,12 @@ public class TimeZoneParserTest {
             .isExactlyInstanceOf(IllegalArgumentException.class)
             .hasMessage("invalid time zone value '+02:xx'");
     }
+
+    // Mutation coverage: exercise the named time-zone path when no offset colon is present.
+    @Test
+    public void test_named_timezone_is_resolved() {
+        DateTimeZone timezone = TimeZoneParser.parseTimeZone("Europe/Paris");
+
+        assertThat(timezone).isEqualTo(DateTimeZone.forID("Europe/Paris"));
+    }
 }

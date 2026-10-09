@@ -57,6 +57,14 @@ public class TimeZoneParserTest {
         assertThat(timezone.getOffset(0L)).isEqualTo(150 * 60 * 1000);
     }
 
+    // Mutation coverage: verify that a leading '+' is excluded from the parsed hour value.
+    @Test
+    public void test_positive_offset_parses_hours_after_plus_sign() {
+        DateTimeZone timezone = TimeZoneParser.parseTimeZone("+01:45");
+
+        assertThat(timezone.getOffset(0L)).isEqualTo(105 * 60 * 1000);
+    }
+
     // Edge case: -02:30 means the full 2 hours and 30 minutes are behind UTC.
     @Test
     public void test_negative_offset_applies_sign_to_minutes() {

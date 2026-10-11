@@ -211,4 +211,37 @@ public class CountTaskTest extends ESTestCase {
         assertThat(rows).hasSize(1);
         assertThat(rows.get(0)).containsExactly(0L);
     }
+    
+    // Mutation coverage: verify that an asynchronous count failure reaches the consumer.
+    @Test
+    public void testAsyncCountFailureIsDeliveredToConsumer() {
+        // Arrange: Mock the CountOperation to return a future that will complete exceptionally.
+        CompletableFuture<Long> future = new CompletableFuture<>();
+        CountOperation countOperation = mock(CountOperation.class);
+
+        when(countOperation.count(
+            eq(txnCtx), any(), any(Symbol.class), eq(false)))
+            .thenReturn(future);
+
+        TestingRowConsumer consumer = new TestingRowConsumer();
+        UnhandledServerException error =
+            new UnhandledServerException("count failed asynchronously");
+
+        CountTask countTask = new CountTask(
+            countPhaseWithId(1),
+            txnCtx,
+            countOperation,
+            consumer,
+            null,
+            RamAccounting.NO_ACCOUNTING
+        );
+        // Act: create a CountTask and start it, then complete the future exceptionally.
+        countTask.start();
+        future.completeExceptionally(error);
+        // Assert: the consumer should receive the exception when trying to get the result.
+        assertThatThrownBy(() -> consumer.getResult(1000))
+            .isSameAs(error);
+    }
+    
+    
 }

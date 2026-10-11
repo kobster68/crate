@@ -425,4 +425,31 @@
         </dependency>
 
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>mutation-counttask</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <configuration>
+                            <targetClasses combine.self="override">
+                                <param>io.crate.execution.jobs.CountTask</param>
+                            </targetClasses>
+                            <targetTests combine.self="override">
+                                <param>io.crate.execution.jobs.CountTaskTest</param>
+                            </targetTests>
+                            <reportsDirectory>${project.build.directory}/pit-counttask-reports</reportsDirectory>
+                            <outputFormats>
+                                <param>HTML</param>
+                                <param>XML</param>
+                            </outputFormats>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

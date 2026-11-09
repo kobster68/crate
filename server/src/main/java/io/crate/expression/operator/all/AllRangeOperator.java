@@ -35,25 +35,25 @@ import io.crate.sql.tree.ComparisonExpression;
 public final class AllRangeOperator extends AllOperator<Object> {
 
     public enum Comparison {
-        GT(ComparisonExpression.Type.GREATER_THAN, ComparisonExpression.Type.LESS_THAN) {
+        GT(ComparisonExpression.Type.GREATER_THAN) {
             @Override
             boolean isMatch(int compareToResult) {
                 return compareToResult > 0;
             }
         },
-        GTE(ComparisonExpression.Type.GREATER_THAN_OR_EQUAL, ComparisonExpression.Type.LESS_THAN_OR_EQUAL) {
+        GTE(ComparisonExpression.Type.GREATER_THAN_OR_EQUAL) {
             @Override
             boolean isMatch(int compareToResult) {
                 return compareToResult >= 0;
             }
         },
-        LT(ComparisonExpression.Type.LESS_THAN, ComparisonExpression.Type.GREATER_THAN) {
+        LT(ComparisonExpression.Type.LESS_THAN) {
             @Override
             boolean isMatch(int compareToResult) {
                 return compareToResult < 0;
             }
         },
-        LTE(ComparisonExpression.Type.LESS_THAN_OR_EQUAL, ComparisonExpression.Type.GREATER_THAN_OR_EQUAL) {
+        LTE(ComparisonExpression.Type.LESS_THAN_OR_EQUAL) {
             @Override
             boolean isMatch(int compareToResult) {
                 return compareToResult <= 0;
@@ -61,16 +61,12 @@ public final class AllRangeOperator extends AllOperator<Object> {
 
         };
 
-        private final String innerOpName;
         private final String opName;
-        private final String inverseInnerOpName;
         private final String symbol;
 
-        private Comparison(ComparisonExpression.Type cmpExpressionType, ComparisonExpression.Type inverseComparison) {
+        private Comparison(ComparisonExpression.Type cmpExpressionType) {
             this.symbol = cmpExpressionType.getValue();
-            this.innerOpName = "op_" + symbol;
             this.opName = OPERATOR_PREFIX + symbol;
-            this.inverseInnerOpName = "op_" + inverseComparison.getValue();
         }
 
         public String opName() {

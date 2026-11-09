@@ -74,7 +74,6 @@ import io.crate.sql.tree.ClusteredBy;
 import io.crate.sql.tree.CollectionColumnType;
 import io.crate.sql.tree.ColumnConstraint;
 import io.crate.sql.tree.ColumnDefinition;
-import io.crate.sql.tree.ColumnPolicy;
 import io.crate.sql.tree.ColumnStorageDefinition;
 import io.crate.sql.tree.ColumnType;
 import io.crate.sql.tree.CreateForeignTable;
@@ -184,7 +183,6 @@ public class TableElementsAnalyzer implements FieldProvider<Reference> {
         private final ColumnIdent name;
         private DataType<?> type;
 
-        private ColumnPolicy columnPolicy = ColumnPolicy.DYNAMIC;
         private IndexType indexType = IndexType.PLAIN;
         private RowGranularity rowGranularity = RowGranularity.DOC;
         private String indexMethod;
@@ -596,7 +594,6 @@ public class TableElementsAnalyzer implements FieldProvider<Reference> {
                 type = collectionColumnType.innerType();
             }
             if (type instanceof ObjectColumnType<Expression> objectColumnType) {
-                builder.columnPolicy = objectColumnType.columnPolicy().orElse(ColumnPolicy.DYNAMIC);
                 for (ColumnDefinition<Expression> nestedColumn : objectColumnType.nestedColumns()) {
                     nestedColumn.accept(this, columnName);
                 }
@@ -750,7 +747,6 @@ public class TableElementsAnalyzer implements FieldProvider<Reference> {
                 type = collectionColumnType.innerType();
             }
             if (type instanceof ObjectColumnType<Expression> objectColumnType) {
-                builder.columnPolicy = objectColumnType.columnPolicy().orElse(ColumnPolicy.DYNAMIC);
                 for (ColumnDefinition<Expression> nestedColumn : objectColumnType.nestedColumns()) {
                     nestedColumn.accept(this, columnName);
                 }

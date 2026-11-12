@@ -31,22 +31,22 @@ public class FilteredSelectIntegrationTest extends IntegTestCase {
     @Test
     public void testSelectFiltersRowsAndReturnsAliasedColumnInOrder() throws Exception {
         // Use the real database path so table creation, storage, and query execution interact.
-        execute("create table users (name string, department string) clustered into 1 shards with (number_of_replicas=0)");
+        execute("create table users (name string, course string) clustered into 1 shards with (number_of_replicas=0)");
 
-        // Include matching and non-matching departments to verify that WHERE filters the stored rows.
-        execute("insert into users (name, department) values (?, ?)", new Object[][]{
-            new Object[]{"Alice", "IT"},
-            new Object[]{"Bob", "IT"},
-            new Object[]{"Cara", "HR"}
+        // Include matching and non-matching courses to verify that WHERE filters the stored rows.
+        execute("insert into users (name, course) values (?, ?)", new Object[][]{
+            new Object[]{"Alice", "SWEN-777"},
+            new Object[]{"Bob", "SWEN-777"},
+            new Object[]{"Kara", "SWEN-755"}
         });
 
         // Make the inserted rows visible before running the SELECT query.
         execute("refresh table users");
 
         // Test filtering, column aliasing, ordering, and result delivery together.
-        execute("select name as employee from users where department = 'IT' order by name");
+        execute("select name as student from users where course = 'SWEN-777' order by name");
 
-        // Cara must be excluded, while the matching names must be returned in order.
+        // Kara must be excluded, while the matching names must be returned in order.
         assertThat(response).hasRows("Alice", "Bob");
     }
 }

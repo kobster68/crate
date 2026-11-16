@@ -44,6 +44,8 @@ import org.elasticsearch.test.junit.annotations.TestLogging;
 import org.jspecify.annotations.Nullable;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.crate.common.exceptions.Exceptions;
 import io.crate.protocols.http.MainAndStaticFileHandler;
 import io.crate.session.Sessions;
@@ -359,6 +361,29 @@ public class RestSQLActionIntegrationTest extends SQLHttpIntegrationTest {
             {"cols":["percentile"],"rows":[[2783.91015625]],"rowcount":1,"duration":
             """.stripIndent().stripTrailing()
         );
+    }
+
+    @Test
+    public void test_count_star_with_bound_filter_argument() throws Exception {
+        execute("create table doc.count_by_name (name text) clustered into 1 shards with (number_of_replicas = 0)");
+        execute("insert into doc.count_by_name (name) values ('O''Reilly'), ('O''Reilly'), ('Atwood')");
+        execute("refresh table doc.count_by_name");
+
+        var body = """
+            {
+              "stmt": "select count(*) from doc.count_by_name where name = ?",
+              "args": ["%s"]
+            }
+            """;
+        var mapper = new ObjectMapper();
+
+        var oreillyResponse = post(body.formatted("O'Reilly"));
+        assertThat(oreillyResponse.statusCode()).isEqualTo(200);
+        assertThat(mapper.readTree(oreillyResponse.body()).path("rows")).isEqualTo(mapper.readTree("[[2]]"));
+
+        var atwoodResponse = post(body.formatted("Atwood"));
+        assertThat(atwoodResponse.statusCode()).isEqualTo(200);
+        assertThat(mapper.readTree(atwoodResponse.body()).path("rows")).isEqualTo(mapper.readTree("[[1]]"));
     }
 
     @Test

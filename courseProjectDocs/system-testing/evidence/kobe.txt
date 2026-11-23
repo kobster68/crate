@@ -1,0 +1,7 @@
+test_filtered_student_search (__main__.CrateSystemTests.test_filtered_student_search)
+ST-01: Create, insert, filter, alias, and sort student records. ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.241s
+
+OK

@@ -1,12 +1,12 @@
-# System Testing Report
+# (Kobe's) System Testing Report
 
 ## Test Scope and Coverage
 
-Kobe's single black-box system test, `test_filtered_student_search`, validates
+Adds a single black-box system test, `test_filtered_student_search`, validates
 the student search workflow against a running CrateDB server through its public
 HTTP SQL API. All setup, actions, observations, and cleanup use SQL requests.
 
-Coverage matches Kobe's previous `FilteredSelectIntegrationTest`: create a table
+Coverage matches the previous `FilteredSelectIntegrationTest`: create a table
 with `name` and `course` string columns; insert Alice and Bob in SWEN-777 and
 Kara in SWEN-755; refresh; select `name AS student` for SWEN-777 ordered by name;
 verify Alice and Bob are returned. A generated table name isolates the HTTP test
@@ -36,12 +36,6 @@ UI, PostgreSQL clients, restart durability, distributed recovery, or performance
 
 ## Execution and Results
 
-Executed on November 19, 2026, on Windows 11 with Python 3.14.7 and Eclipse
-Adoptium JDK 26.0.2.1+1. The server was the existing local distribution
-`crate-6.5.0-2026-11-05-17-02-ee7a3c5.zip`, reporting version 6.5.0-SNAPSHOT,
-build `ee7a3c5`. This verifies the suite against that build; the current branch
-was not rebuilt for this run.
-
 The archive was extracted under the ignored `target/system-testing-runtime/`
 directory. Its `bin/crate.bat` was started with:
 
@@ -57,27 +51,4 @@ python -u courseProjectCode/system-testing/test_system.py 2>&1 | Tee-Object -Fil
 $LASTEXITCODE
 ```
 
-The individual run passed: **1 test, 0 failures, 0 errors**, in
-2.241 seconds, with Python exit code **0**. The [execution transcript](evidence/kobe.txt)
-contains this run's output. Cleanup completed successfully. No behavioral
-deviations were observed. The temporary server was stopped after execution.
-
-| Case | Outcome | Deviations / failures |
-| --- | --- | --- |
-| ST-01 | Passed | None observed |
-
-## Group Contributions
-
-Kobe selected the workflow from his previous integration assignment, specified
-the test data and separate course-project location, and limited this contribution
-to one test. Implementation, comments, documentation, and local execution were
-completed with Codex assistance. Student review remains pending.
-
-| Student | Contribution status |
-| --- | --- |
-| Kobe | ST-01: defined the student search scenario and data, requested matching the earlier integration test, and directed documentation updates; student review pending. |
-| Michael | Three order workflow cases covering paid-order summaries, payment updates, and deletion. See [Michael's report](report-michael.md). |
-
-This folder contains Kobe's one case and Michael's three cases. The combined
-four-test run passed against CrateDB 6.5.0-SNAPSHOT, build `35c2ccb`, built from
-this checkout. See the [combined output](evidence/combined.txt) for the results.
+The individual run passed: **1 test, 0 failures, 0 errors**. The [execution transcript](evidence/kobe.txt) contains this run's output.

@@ -1,100 +1,79 @@
 # System Testing
 
-Kobe's single system test in
-[test_system.py](../../courseProjectCode/system-testing/test_system.py) uses
-Python's standard-library `unittest` and HTTP client. No pip packages are required.
-It sends SQL requests through a running CrateDB server's public `POST /_sql` API.
+## Michael - Order workflow
 
-The workflow matches the previous integration assignment: create a table with
-`name` and `course` string columns, insert Alice and Bob in SWEN-777 and Kara in
-SWEN-755, refresh, then filter for SWEN-777 using `name AS student` and `ORDER BY
-name`. The expected rows are Alice followed by Bob. The table has a generated
-name and is dropped after execution.
+The three tests in `test_order_workflow.py` check reading, updating, and deleting orders through CrateDB's public HTTP SQL interface. Each test creates its own table and removes it afterward. [Test file](../../courseProjectCode/system-testing/test_order_workflow.py)
 
-## Prerequisites
+## Kobe - Filtered student search
 
-- Python 3.10 or newer.
-- A running, disposable local CrateDB instance with its HTTP port accessible.
-- The instance must allow unauthenticated SQL requests and table creation/deletion
-  in the `doc` schema. The test uses unauthenticated HTTP requests.
+The test in `test_system.py` creates student records, filters for SWEN-777, and checks the column alias, matching names, and their order. Its table also has a unique name and is removed after the test. [Test file](../../courseProjectCode/system-testing/test_system.py)
 
-Use the CrateDB distribution built from the checkout when verifying this branch.
-Set `JAVA_HOME` to JDK 26.0.2.1, as required by this checkout's Maven configuration.
-If you do not have a distribution, build one from the repository root:
+## Before You Start
+
+Use Python 3.14 and Java JDK 26.0.2.1, with `JAVA_HOME` set to the JDK folder. Both scripts use Python's standard library. Maven is included through the project wrapper.
+
+Open PowerShell in the project root, where `mvnw.cmd` is located. Use a local CrateDB instance that allows creating and dropping test tables in the `doc` schema. The packaged configuration gives the `crate` user trusted access from localhost.
+
+## Build CrateDB
 
 ```powershell
-.\mvnw.cmd -T1 package "-DskipTests"
+.\mvnw.cmd -B -T1 -pl app,jlink-jdk -am "-DskipTests" package
 ```
 
-Extract the resulting
-`app/target/crate-*.zip` into a temporary directory. In a separate terminal, start
-its `bin/crate.bat` (Windows) or `bin/crate` (Linux/WSL) with:
+This builds the application and its bundled Java runtime. The test suites are skipped during this packaging step.
 
-```text
--Cdiscovery.type=single-node -Cnetwork.host=127.0.0.1 -Chttp.port=4200
-```
+Extract the generated `crate-*.zip` from `app/target/` into a folder whose full path has no spaces, such as `C:\crate-system-test`. The extracted CrateDB folder contains `bin`, `config`, `jdk`, and `lib`.
 
-Wait until the server accepts requests. Keep it running during the tests, and
-stop it with Ctrl+C afterward. The tests do not start or stop the server.
+## Start the Local Server
 
-## Execute
-
-From the repository root in PowerShell:
+Open a terminal inside the extracted CrateDB folder and run the following commands.
 
 ```powershell
-python -u courseProjectCode/system-testing/test_system.py
+$env:CRATE_HEAP_SIZE = "512m"
+cmd /d /c bin\crate.bat -Ccluster.name=swen777-system-testing -Cnode.name=swen777-system-node -Cnetwork.host=127.0.0.1 -Cdiscovery.type=single-node -Chttp.port=44200 -Cpsql.port=44300 -Ctransport.tcp.port=44301
 ```
 
-The default server is `http://127.0.0.1:4200`. To select another local instance:
+This starts a single local node with a 512 MB heap. The HTTP SQL endpoint is `http://127.0.0.1:44200/_sql`.
+
+Wait for the server's log to show that the node has started. Keep this window open while running the tests. Press Ctrl+C in this window to stop the server when finished.
+
+## Run the Tests
+
+Open a second terminal window in the project root. Set the server address, then run all four tests.
 
 ```powershell
-$env:CRATE_HTTP_URL = 'http://127.0.0.1:4420'
-python -u courseProjectCode/system-testing/test_system.py
+$env:CRATE_HTTP_URL = "http://127.0.0.1:44200"
+python -m unittest discover -s courseProjectCode/system-testing -p "test*.py" -v
 ```
 
-To select the case explicitly:
+Both scripts read `CRATE_HTTP_URL`. Set it to the server's base address, without `/_sql`. If it is unset, both scripts use `http://127.0.0.1:4200`.
+
+Expected results are 4 tests passed, 0 failures, 0 errors, and 0 skipped. The output lists each case and ends with `Ran 4 tests` and `OK`.
+
+### Run Michael's Tests Separately
+
+In the same test terminal, run the following command.
 
 ```powershell
-python -u courseProjectCode/system-testing/test_system.py CrateSystemTests.test_filtered_student_search
+python courseProjectCode/system-testing/test_order_workflow.py -v
 ```
 
-On Linux/WSL, use `python3` and set the optional URL with
-`export CRATE_HTTP_URL=http://127.0.0.1:4420`.
+Expected results are 3 tests passed. The paid-order summaries are 2 orders totaling 100 for the read test, 3 totaling 125 after the update, and 1 totaling 60 after the deletion. Each case starts from a fresh copy of the same three orders.
 
-## Results and reproduction
-
-A successful run reports `Ran 1 test` and `OK`, with process exit code 0:
-
-```text
-test_filtered_student_search ... ok
-...
-Ran 1 test in <elapsed time>s
-
-OK
-```
-
-Assertion failures or connection errors produce a nonzero exit code; an unavailable
-server is an error rather than a skipped or passing test.
-
-To save an execution transcript in PowerShell:
+### Run Kobe's Test Separately
 
 ```powershell
-python -u courseProjectCode/system-testing/test_system.py 2>&1 | Tee-Object -FilePath courseProjectDocs/system-testing/execution.txt
-$LASTEXITCODE
+python courseProjectCode/system-testing/test_system.py -v
 ```
 
-Record the date, Python version, server version/build, command, exit code, and
-observed results in [report.md](report.md). A pre-existing build can be used for
-an initial check, but record its version and do not present it as testing the
-current source revision.
+Expected results are 1 test passed. The query returns the column `student` and the rows Alice, then Bob. Kara is excluded.
 
-The test creates a randomly named `doc.system_test_<uuid>` table and
-registers cleanup after creation. The insert is followed by
-`REFRESH TABLE` before searches. This avoids depending on automatic refresh timing.
-Cleanup errors fail the run. If the process is forcibly terminated, its test table
-may remain; inspect and remove only that run's table before disposing of the instance.
+On Linux/WSL, use `./mvnw` to build, start `bin/crate` with the same `-C` options, and use `python3` for the test commands. Set the address with `export CRATE_HTTP_URL=http://127.0.0.1:44200`.
 
-The latest recorded run passed on November 19, 2026, against CrateDB
-6.5.0-SNAPSHOT, build `ee7a3c5`: one test in 2.241 seconds, exit code 0.
-See [report.md](report.md) for the environment and startup options and
-[execution.txt](execution.txt) for the captured output.
+## Reports and Saved Results
+
+- Kobe's [report](report.md) and [saved test output](evidence/kobe.txt).
+- Michael's [report](report-michael.md) and [saved test output](evidence/michael.txt).
+- [Combined four-test output](evidence/combined.txt).
+
+The saved output files include the individual runs and the combined four-test run. Failed assertions or connection errors produce a nonzero exit code. Each test registers cleanup to drop its own table after execution, including when an assertion fails.

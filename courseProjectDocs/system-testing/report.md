@@ -57,8 +57,8 @@ python -u courseProjectCode/system-testing/test_system.py 2>&1 | Tee-Object -Fil
 $LASTEXITCODE
 ```
 
-The current single-case suite passed: **1 test, 0 failures, 0 errors**, in
-2.241 seconds, with Python exit code **0**. The [execution transcript](execution.txt)
+The individual run passed: **1 test, 0 failures, 0 errors**, in
+2.241 seconds, with Python exit code **0**. The [execution transcript](evidence/kobe.txt)
 contains this run's output. Cleanup completed successfully. No behavioral
 deviations were observed. The temporary server was stopped after execution.
 
@@ -76,8 +76,8 @@ completed with Codex assistance. Student review remains pending.
 | Student | Contribution status |
 | --- | --- |
 | Kobe | ST-01: defined the student search scenario and data, requested matching the earlier integration test, and directed documentation updates; student review pending. |
-| Michael | No system test contribution recorded in this folder yet. |
+| Michael | Three order workflow cases covering paid-order summaries, payment updates, and deletion. See [Michael's report](report-michael.md). |
 
-This folder currently contains Kobe's one case. The assignment requires at least
-one case per student, so Michael's contribution remains to be added before the
-group submission.
+This folder contains Kobe's one case and Michael's three cases. The combined
+four-test run passed against CrateDB 6.5.0-SNAPSHOT, build `35c2ccb`, built from
+this checkout. See the [combined output](evidence/combined.txt) for the results.

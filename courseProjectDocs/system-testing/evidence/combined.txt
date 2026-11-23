@@ -1,0 +1,10 @@
+test_delete_paid_order (test_order_workflow.OrderWorkflowSystemTest.test_delete_paid_order) ... ok
+test_mark_pending_order_as_paid (test_order_workflow.OrderWorkflowSystemTest.test_mark_pending_order_as_paid) ... ok
+test_paid_order_summary (test_order_workflow.OrderWorkflowSystemTest.test_paid_order_summary) ... ok
+test_filtered_student_search (test_system.CrateSystemTests.test_filtered_student_search)
+ST-01: Create, insert, filter, alias, and sort student records. ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 4.479s
+
+OK

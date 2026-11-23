@@ -1,0 +1,8 @@
+test_delete_paid_order (__main__.OrderWorkflowSystemTest.test_delete_paid_order) ... ok
+test_mark_pending_order_as_paid (__main__.OrderWorkflowSystemTest.test_mark_pending_order_as_paid) ... ok
+test_paid_order_summary (__main__.OrderWorkflowSystemTest.test_paid_order_summary) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 2.879s
+
+OK
